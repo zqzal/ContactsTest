@@ -3,6 +3,24 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <Button
+            android:id="@+id/call_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="打电话"/>
+        <Button
+            android:id="@+id/contact_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="获取通讯录"/>
+
+    </LinearLayout>
+
     <ListView
         android:id="@+id/contacts_view"
         android:layout_width="match_parent"
