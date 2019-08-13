@@ -27,41 +27,13 @@ public class MainActivity extends AppCompatActivity {
 
     List<String> contactsList = new ArrayList<>();
 
-    private Button callButton;
-
-    private Button contanctButton;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        callButton = findViewById(R.id.call_button);
-        contanctButton = findViewById(R.id.contact_button);
         ListView contactsView = findViewById(R.id.contacts_view);
-        adapter = new ArrayAdapter<String>(this,android.R.layout.simple_list_item_1,contactsList);
+        adapter = new ArrayAdapter<>(this,android.R.layout.simple_list_item_1,contactsList);
         contactsView.setAdapter(adapter);
-
-        callButton = findViewById(R.id.call_button);
-        contanctButton = findViewById(R.id.contact_button);
-
-        contanctButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                getContactsPemissions();
-            }
-        });
-
-        callButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                getCallPemissions();
-            }
-        });
-
-    }
-
-
-    public void getContactsPemissions(){
         if (ContextCompat.checkSelfPermission(this,Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED){
             ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.READ_CONTACTS},1);
         }else {
@@ -69,36 +41,32 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public void getCallPemissions(){
-        if (ContextCompat.checkSelfPermission(this,Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED){
-            ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.CALL_PHONE},2);
-        }else {
 
-            AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-            builder.setTitle("确认");
-            builder.setMessage("电话权限已获取");
-            builder.setCancelable(false);
-            builder.setPositiveButton("朕知道了", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    Toast.makeText(MainActivity.this,"ooo",Toast.LENGTH_SHORT).show();
-                }
-            });
-            builder.show();
-
-        }
-    }
 
     private void readContacts() {
 
         Cursor cursor = null;
-        //查询联系人数据
-        cursor = getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI,null,null,null ,null);
-        if (cursor != null){
+        try{
+            //查询联系人数据
+            cursor = getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI,null,null,null ,null);
+            if (cursor != null){
 
+                while (cursor.moveToNext()){
+                    //获取联系人姓名
+                    String displayName = cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME));
+                    //获取联系人手机号
+                    String number = cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
+                    contactsList.add(displayName + "\n" + number);
+                }
+                adapter.notifyDataSetChanged();
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }finally {
+            if (cursor != null){
+                cursor.close();
+            }
         }
-
-
     }
 
     @Override
@@ -107,22 +75,12 @@ public class MainActivity extends AppCompatActivity {
 
         switch (requestCode){
             case 1:
-
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED){
                     readContacts();
                 }else {
                     Toast.makeText(this,"不能获取通讯录名单",Toast.LENGTH_SHORT).show();
                 }
                 break;
-            case 2:
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED){
-
-                }else {
-                    Toast.makeText(this,"不能调用拨打电话功能",Toast.LENGTH_SHORT).show();
-                }
-                break;
-
-                default:
         }
 
     }
