@@ -42,9 +42,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-
     private void readContacts() {
-
         Cursor cursor = null;
         try{
             //查询联系人数据
